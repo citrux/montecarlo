@@ -3,12 +3,11 @@
 \usepackage[russian]{babel}
 \author{citrux}
 \title{Монте-Карло каждый день}
-\usepackage{paratype}
-\renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
 \usepackage{setspace}
-\renewcommand{\vec}[1]{\boldsymbol{\mathrm{#1}}}
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
 \begin{document}
 \maketitle
+\tableofcontents
 \onehalfspacing
 
 \section{Биндер и Хеерман <<Моделирование методом Монте-Карло в статистической физике>>}
@@ -43,11 +42,41 @@
     \item Генерируются состояния с малым статвесом, что приводит к падению эффективности
 \end{enumerate}
 
-\subsection{День2. Выборка по значимости}
+\subsection{День 2. Выборка по значимости}
 
 Если состояния \(\vec{x}_l\) выбраны в соответствии с некоторой вероятностью \(P(\vec{x}_l)\), то термодинамическое усреднение выполняется следующим образом:
 \begin{equation}
 \overline{A(\vec{x})}=\frac{\sum\limits_{l=1}^{M} \exp[-\mathcal{H}(\vec{x}_l)/k_BT]A(\vec{x}_l)/P(\vec{x}_l)}
                               {\sum\limits_{l=1}^{M} \exp[-\mathcal{H}(\vec{x}_l)/k_BT]/P(\vec{x}_l)}
 \end{equation}
+Наиболее естественно выбрать \( P(\vec{x}_l) \propto \exp[-\mathcal{H}(\vec{x}_l)/k_BT] \), тогда поиск среднего значения сводится к простому арифметическому усреднению:
+\begin{equation}
+    \overline{A(\vec{x})} = \frac{1}{M}\sum_{l=1}^M A(\vec{x}_l)
+\end{equation}
+Метрополис и др. развили идею, которая состоит не в последовательном выборе состояний с заданным распределением независимо одного от другого, а в построении марковского процесса, когда каждое состояние конструируется из предыдущего с помощью соответствующей вероятности перехода \( W(\vec{x}_l \to \vec{x}_{l+1}) \). Они показали, что можно выбрать вероятность перехода такой, чтобы при \(M\to\infty\)
+\begin{equation}
+    P(\vec{x}_l) \to P_{eq}(\vec{x}_l) = \frac{1}{Z}\exp\left(-\frac{\mathcal{H}(\vec{x}_l)}{k_BT}\right)
+\end{equation}
+Для этого достаточно выполнения принципа детального равновесия
+\begin{equation}
+    P_{eq}(\vec{x}_l)W(\vec{x}_l \to \vec{x}_{l'}) = P_{eq}(\vec{x}_{l'})W(\vec{x}_{l'} \to \vec{x}_l),
+\end{equation}
+\begin{equation}
+    \frac{W(\vec{x}_l \to \vec{x}_{l'})}{W(\vec{x}_{l'} \to \vec{x}_l)} = \exp\left(-\frac{\delta\mathcal{H}}{k_BT}\right),\quad \delta\mathcal{H} = \mathcal{H}(\vec{x}_{l'}) - \mathcal{H}(\vec{x}_l)
+    \label{eq:equilibrium_ratio}
+\end{equation}
+Уравнение \ref{eq:equilibrium_ratio} оставляет некоторый произвол в выборе конкретного вида \( W \). Наиболее распространены следующие 2 варианта:
+\begin{equation}
+    W(\vec{x}_l \to \vec{x}_{l'}) = \frac{\tau_s^{-1}}{2}\left(1-\th\frac{\delta\mathcal{H}}{2k_BT}\right),
+\end{equation}
+\begin{equation}
+    W(\vec{x}_l \to \vec{x}_{l'}) = \left\{
+        \begin{array}{ll}
+            \tau_s^{-1}\exp(-\delta\mathcal{H}/k_BT),& \delta\mathcal{H}>0,\\
+            \tau_s^{-1}, & \text{иначе}.
+        \end{array}
+    \right.
+\end{equation}
+
+\subsection{День 3. Программная реализация метода Монте-Карло. Динамическая интерпретация выборки}
 \end{document}
